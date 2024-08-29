@@ -6,6 +6,9 @@ export const Completo = () => {
   // Armazena a lista de tarefas.
   const [tasks, setTasks] = useState([]);
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentTaskIndex, setCurrentTaskIndex] = useState(null);
+
   // Atualiza o estado task sempre que o usuário digita no campo de entrada.
   const handleInputChange = (atualiza) => {
     setTask(atualiza.target.value);
@@ -16,6 +19,32 @@ export const Completo = () => {
     if (task.trim() !== "") {
       setTasks([...tasks, task]);
       setTask(""); // Limpa o campo de entrada após adicionar
+    }
+  };
+
+  // Função para deletar uma tarefa da lista
+  const handleDeleteTask = (index) => {
+    const newTasks = tasks.filter((_, taskIndex) => taskIndex !== index);
+    setTasks(newTasks);
+  };
+
+  // Função para Editar uma tarefa da lista
+  const handleEditTask = (index) => {
+    setIsEditing(true);
+    setCurrentTaskIndex(index);
+    setTask(tasks[index]);
+  };
+
+  // Função para salvart alista
+  const handleSaveTask = () => {
+    if (task.trim() !== "") {
+      const newTasks = tasks.map((item, index) =>
+        index === currentTaskIndex ? task : item
+      );
+      setTasks(newTasks);
+      setIsEditing(false);
+      setTask("");
+      setCurrentTaskIndex(null);
     }
   };
 
@@ -30,12 +59,30 @@ export const Completo = () => {
           onChange={handleInputChange}
           placeholder="Adicione uma nova tarefa..."
         ></input>
-        <button id="add-task" onClick={handleAddTask}>
-          Adicionar
-        </button>
+        {isEditing ? (
+          <button onClick={handleSaveTask}>Salvar</button>
+        ) : (
+          <button id="add-task" onClick={handleAddTask}>
+            Adicionar
+          </button>
+        )}
         <ul>
           {tasks.map((task, index) => (
-            <li key={index}>{task}</li>
+            <li key={index}>
+              {task}
+              <button
+                onClick={() => handleDeleteTask(index)}
+                style={{ marginLeft: "10px" }}
+              >
+                Deletar
+              </button>
+              <button
+                onClick={() => handleEditTask(index)}
+                style={{ marginLeft: "10px" }}
+              >
+                Editar
+              </button>
+            </li>
           ))}
         </ul>
       </div>
